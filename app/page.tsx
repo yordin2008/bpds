@@ -9,3 +9,8 @@ interface Task {
   completed: boolean;
   createdAt: string;
 }
+export default function Home() {
+  // 2. Definición de estados locales de la interfaz
+  const [tasks, setTasks] = useState<Task[]>([]); 
+  const [isCreating, setIsCreating] = useState(false); 
+  const [title, setTitle] = useState(''); 
