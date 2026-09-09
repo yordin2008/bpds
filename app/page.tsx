@@ -1,7 +1,14 @@
-"use client";
+'use client';
+import { useState, useEffect } from 'react';
 
-import Image from "next/image";
-
+// 1. Estructura de datos para tipar las tareas con TypeScript
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  createdAt: string;
+}
 export default function Home() {
   const handleDelete = () => {
     
