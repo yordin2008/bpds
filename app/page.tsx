@@ -53,40 +53,43 @@ export default function Home() {
     };
     return (
     <main className="p-8 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-black">Gestor de Tareas</h1>
+      <h1 className="text-2xl font-bold mb-6 text-black dark:text-white">Gestor de Tareas</h1>
 
-      {/* 5. Sección superior: Cuadro interactivo de doble clic e input de creación */}
+      {/* 5. Sección superior: Texto opaco interactivo por doble clic */}
       <div className="mb-8">
         {!isCreating ? (
-          <div
+          <p
             onDoubleClick={() => setIsCreating(true)}
-            className="border-2 border-dashed border-gray-400 p-6 rounded-lg text-center cursor-pointer text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors bg-gray-50"
+            className="text-gray-400 dark:text-gray-500 italic cursor-pointer select-none py-2 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
-            Doble clic aquí para agregar una nueva tarea
-          </div>
+            Doble clic para añadir una nueva tarea (escribe y dale Enter)...
+          </p>
         ) : (
           <input
             type="text"
             autoFocus
-            placeholder="Escribe el nombre y presiona Enter..."
+            placeholder="Escribe tu tarea para hacer y dale Enter..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={() => setIsCreating(false)}
-            className="border p-3 rounded-lg w-full text-black outline-none focus:border-blue-500 shadow-sm"
+            className="border-b-2 border-blue-500 bg-transparent py-2 w-full text-black dark:text-white outline-none text-lg"
           />
         )}
       </div>
 
       {/* 6. Sección inferior: Renderizado dinámico de la lista de tareas */}
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold text-gray-700">Tareas Agregadas</h2>
+        <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Tareas Agregadas</h2>
         {tasks.length === 0 ? (
-          <p className="text-gray-400 text-sm">No hay tareas creadas todavía.</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm">No hay tareas creadas todavía.</p>
         ) : (
           tasks.map((task) => (
-            <div key={task.id} className="border p-4 rounded-lg shadow-sm bg-white">
-              <p className="font-medium text-black">{task.title}</p>
+            <div 
+              key={task.id} 
+              className="border border-gray-200 dark:border-zinc-800 p-4 rounded-lg shadow-sm bg-white dark:bg-zinc-900"
+            >
+              <p className="font-medium text-black dark:text-white">{task.title}</p>
             </div>
           ))
         )}
