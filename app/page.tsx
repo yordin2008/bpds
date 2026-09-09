@@ -51,3 +51,46 @@ export default function Home() {
         }
       }
     };
+    return (
+    <main className="p-8 max-w-lg mx-auto">
+      <h1 className="text-2xl font-bold mb-6 text-black">Gestor de Tareas</h1>
+
+      {/* 5. Sección superior: Cuadro interactivo de doble clic e input de creación */}
+      <div className="mb-8">
+        {!isCreating ? (
+          <div
+            onDoubleClick={() => setIsCreating(true)}
+            className="border-2 border-dashed border-gray-400 p-6 rounded-lg text-center cursor-pointer text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors bg-gray-50"
+          >
+            Doble clic aquí para agregar una nueva tarea
+          </div>
+        ) : (
+          <input
+            type="text"
+            autoFocus
+            placeholder="Escribe el nombre y presiona Enter..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={() => setIsCreating(false)}
+            className="border p-3 rounded-lg w-full text-black outline-none focus:border-blue-500 shadow-sm"
+          />
+        )}
+      </div>
+
+      {/* 6. Sección inferior: Renderizado dinámico de la lista de tareas */}
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-gray-700">Tareas Agregadas</h2>
+        {tasks.length === 0 ? (
+          <p className="text-gray-400 text-sm">No hay tareas creadas todavía.</p>
+        ) : (
+          tasks.map((task) => (
+            <div key={task.id} className="border p-4 rounded-lg shadow-sm bg-white">
+              <p className="font-medium text-black">{task.title}</p>
+            </div>
+          ))
+        )}
+      </div>
+    </main>
+  );
+}
