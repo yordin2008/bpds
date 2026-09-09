@@ -23,9 +23,28 @@ const dbPath = path.join(process.cwd(), 'data', 'tasks.json');
 
 //FUNCIONES PARA LAS TAREAS
 
-getAll: (): Task[] => {
+// Función para leer todas las tareas (usando la sintaxis limpia)
+export const TaskModel = {
+  getAll(): Task[] {
     if (!fs.existsSync(dbPath)) return []; 
     const data = fs.readFileSync(dbPath, 'utf-8');
     return JSON.parse(data);
   },
 
+// Función para CREAR una tarea
+create(title: string, description: string): Task {
+    const tasks = TaskModel.getAll();
+    
+    const newTask: Task = {
+      id: Date.now().toString(),
+      title: title,
+      description: description,
+      completed: false,
+      createdAt: new Date().toISOString()
+    };
+
+    tasks.push(newTask);
+    fs.writeFileSync(dbPath, JSON.stringify(tasks, null, 2));
+    return newTask;
+  }
+};
