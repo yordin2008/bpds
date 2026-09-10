@@ -14,6 +14,8 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]); 
   const [isCreating, setIsCreating] = useState(false); 
   const [title, setTitle] = useState(''); 
+  const [loading, setLoading]= useState(true);
+  const [error, setError] = useState("");
   // 3. Sincronización inicial al montar el componente en el navegador
   useEffect(() => {
     fetchTasks();
@@ -26,9 +28,15 @@ export default function Home() {
       if (res.ok) {
         const data = await res.json();
         setTasks(data);
+        setLoading(false);
+      } else {
+        setError('No se pudieron cargar las tareas');
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error al cargar tareas:', error);
+      setError('No se pudieron cargar las tareas');
+      setLoading(false);
     }
   };
   // 4. Lógica para detectar la tecla Enter y enviar los datos al servidor (POST)
@@ -48,9 +56,19 @@ export default function Home() {
           }
         } catch (error) {
           console.error('Error al guardar la tarea:', error);
+          setError('No se pudieron cargar las tareas');
+          setLoading(false);
         }
       }
     };
+
+    if (loading) {
+      return <p>Cargando tareas...</p>;
+    }
+    if (error) {
+      return <p>{error}</p>;
+    }
+
     return (
     <main className="p-8 max-w-lg mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-black dark:text-white">Gestor de Tareas</h1>
@@ -90,6 +108,10 @@ export default function Home() {
               className="border border-gray-200 dark:border-zinc-800 p-4 rounded-lg shadow-sm bg-white dark:bg-zinc-900"
             >
               <p className="font-medium text-black dark:text-white">{task.title}</p>
+              <p className="text-gray-600 dark:text-gray-400">{task.description}</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                Estado: {task.completed ? "Completada" : "Pendiente"}
+              </p>
             </div>
           ))
         )}
