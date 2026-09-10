@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 
 export default function Home() {
   const handleDelete = () => {
@@ -10,7 +9,7 @@ export default function Home() {
     if (confirmed) {
       try {
         
-        alert("¡Elemento eliminado con éxito! (Persona 4)");
+        alert("¡Elemento eliminado con éxito! ");
       } catch (error) {
         
         alert("Ocurrió un error al intentar eliminar el elemento.");
