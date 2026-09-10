@@ -46,5 +46,26 @@ create(title: string, description: string): Task {
     tasks.push(newTask);
     fs.writeFileSync(dbPath, JSON.stringify(tasks, null, 2));
     return newTask;
+  },
+
+  // Función para ACTUALIZAR una tarea
+  update(id: string, title: string, description: string, completed: boolean): Task | null {
+    const tasks = TaskModel.getAll();
+
+    const taskIndex = tasks.findIndex((task) => task.id === id);
+
+    if (taskIndex === -1) return null;
+
+    tasks[taskIndex] = {
+      ...tasks[taskIndex],
+      title,
+      description,
+      completed
+    };
+
+    fs.writeFileSync(dbPath, JSON.stringify(tasks, null, 2));
+
+    return tasks[taskIndex];
   }
 };
+;
