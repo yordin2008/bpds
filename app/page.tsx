@@ -14,10 +14,11 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]); 
   const [isCreating, setIsCreating] = useState(false); 
   const [title, setTitle] = useState(''); 
-
   const [editingId, setEditingId] = useState<string | null>(null);
-const [editTitle, setEditTitle] = useState('');
-const [editDescription, setEditDescription] = useState('');
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   // 3. Sincronización inicial al montar el componente en el navegador
   
 
@@ -28,10 +29,16 @@ const [editDescription, setEditDescription] = useState('');
       if (res.ok) {
         const data = await res.json();
         setTasks(data);
+        setLoading(false);
+      } else {
+        setError('No se pudieron cargar las tareas');
+        setLoading(false);
       }
       
     } catch (error) {
       console.error('Error al cargar tareas:', error);
+      setError('No se pudieron cargar las tareas');
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -92,31 +99,41 @@ const [editDescription, setEditDescription] = useState('');
           }
         } catch (error) {
           console.error('Error al guardar la tarea:', error);
+          setError('No se pudieron cargar las tareas');
+          setLoading(false);
         }
       }
     };
 
       // Función para cambiar el estado de una tarea
-  const handleToggleComplete = async (task: Task) => {
-    try {
-      const res = await fetch('/api/tasks', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: task.id,
-          title: task.title,
-          description: task.description,
-          completed: !task.completed,
-        }),
-      });
+      const handleToggleComplete = async (task: Task) => {
+        try {
+          const res = await fetch('/api/tasks', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              completed: !task.completed,
+            }),
+          });
 
-      if (res.ok) {
-        fetchTasks();
+          if (res.ok) {
+            fetchTasks();
+          }
+        } catch (error) {
+          console.error('Error al cambiar el estado de la tarea:', error);
+        }
+      };
+
+      if (loading) {
+        return <p>Cargando tareas...</p>;
       }
-    } catch (error) {
-      console.error('Error al cambiar el estado de la tarea:', error);
-    }
-  };
+
+      if (error) {
+        return <p>{error}</p>;
+      }
     return (
     <main className="p-8 max-w-lg mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-black dark:text-white">Gestor de Tareas</h1>
@@ -152,67 +169,81 @@ const [editDescription, setEditDescription] = useState('');
         ) : (
           tasks.map((task) => (
             <div 
-  key={task.id} 
-  className="border border-gray-200 dark:border-zinc-800 p-4 rounded-lg shadow-sm bg-white dark:bg-zinc-900"
->
-  {editingId === task.id ? (
-    <div className="space-y-3">
-      <input
-        type="text"
-        value={editTitle}
-        onChange={(e) => setEditTitle(e.target.value)}
-        className="border rounded p-2 w-full text-black"
-        placeholder="Título de la tarea"
-      />
+              key={task.id}
+              className="border border-gray-200 dark:border-zinc-800 p-4 rounded-lg shadow-sm bg-white dark:bg-zinc-900"
+            >
+              {editingId === task.id ? (
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="border rounded p-2 w-full text-black"
+                    placeholder="Título de la tarea"
+                  />
 
-      <input
-        type="text"
-        value={editDescription}
-        onChange={(e) => setEditDescription(e.target.value)}
-        className="border rounded p-2 w-full text-black"
-        placeholder="Descripción"
-      />
+                  <input
+                    type="text"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="border rounded p-2 w-full text-black"
+                    placeholder="Descripción"
+                  />
 
-      <div className="flex gap-2">
-        <button
-          onClick={() => handleUpdate(task.id)}
-          className="px-3 py-1 bg-blue-500 text-white rounded"
-        >
-          Guardar
-        </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleUpdate(task.id)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded"
+                    >
+                      Guardar
+                    </button>
 
-        <button
-          onClick={() => setEditingId(null)}
-          className="px-3 py-1 bg-gray-300 text-black rounded"
-        >
-          Cancelar
-        </button>
-      </div>
-    </div>
-  ) : (
-    <div className="flex items-center justify-between">
-      <p className="font-medium text-black dark:text-white">{task.title}</p>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="px-3 py-1 bg-gray-300 text-black rounded"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-black dark:text-white">
+                      {task.title}
+                    </p>
 
-      <button
-        onClick={() => {
-          setEditingId(task.id);
-          setEditTitle(task.title);
-          setEditDescription(task.description);
-        }}
-        className="px-3 py-1 bg-gray-200 text-black rounded"
-      >
-        Editar
-      </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingId(task.id);
+                          setEditTitle(task.title);
+                          setEditDescription(task.description);
+                        }}
+                        className="px-3 py-1 bg-gray-200 text-black rounded"
+                      >
+                        Editar
+                      </button>
 
-      <button
-  onClick={() => handleToggleComplete(task)}
-  className="px-3 py-1 bg-green-500 text-white rounded"
->
-  {task.completed ? 'Marcar pendiente' : 'Completar'}
-</button>
-    </div>
-  )}
-</div>
+                      <button
+                        onClick={() => handleToggleComplete(task)}
+                        className="px-3 py-1 bg-green-500 text-white rounded"
+                      >
+                        {task.completed ? 'Marcar pendiente' : 'Completar'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {task.description}
+                  </p>
+
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Estado: {task.completed ? 'Completada' : 'Pendiente'}
+                  </p>
+                </>
+              )}
+            </div>
           ))
         )}
       </div>
