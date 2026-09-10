@@ -27,3 +27,46 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }
 }
+
+// Actualiza una tarea existente
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, title, description, completed } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'El ID de la tarea es obligatorio' },
+        { status: 400 }
+      );
+    }
+
+    if (!title || !title.trim()) {
+      return NextResponse.json(
+        { error: 'El título es obligatorio' },
+        { status: 400 }
+      );
+    }
+
+    const updatedTask = TaskModel.update(
+      id,
+      title.trim(),
+      description ?? '',
+      Boolean(completed)
+    );
+
+    if (!updatedTask) {
+      return NextResponse.json(
+        { error: 'Tarea no encontrada' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(updatedTask, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Error interno' },
+      { status: 500 }
+    );
+  }
+}
